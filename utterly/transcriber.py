@@ -3,8 +3,7 @@ Transcription functionality for utterly using Deepgram.
 """
 
 import os
-from dotenv import load_dotenv
-import logging, verboselogs
+import logging
 from datetime import datetime
 from typing import Optional, Dict
 import httpx
@@ -15,8 +14,6 @@ from deepgram import (
     PrerecordedOptions,
     FileSource,
 )
-
-from .runtime_settings import RuntimeSettings
 
 
 class TranscriptionError(Exception):

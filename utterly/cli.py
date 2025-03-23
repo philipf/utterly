@@ -21,7 +21,7 @@ def cli(ctx, config: Optional[str]):
     try:
         ctx.ensure_object(dict)
         ctx.obj["config"] = Config(config)
-        
+
         # If no command is provided, run pipeline by default
         if ctx.invoked_subcommand is None:
             ctx.invoke(pipeline)
@@ -180,8 +180,8 @@ def transcribe(ctx, audio_file: str, output: Optional[str]):
         transcriber = Transcriber(settings)
 
         # Transcribe file using settings from runtime_settings
-        result = transcriber.transcribe_file(audio_file, output_path)
-        click.echo(f"Transcription completed successfully")
+        transcriber.transcribe_file(audio_file, output_path)
+        click.echo("Transcription completed successfully")
         return output_path
 
     except (TranscriptionError, RuntimeSettingsError) as e:
@@ -195,80 +195,81 @@ def transcribe(ctx, audio_file: str, output: Optional[str]):
 def summarize(ctx, transcript_file: str, output: Optional[str]):
     """Generate a summary from a transcript."""
     try:
-        from .prompty_utils import list_prompty_files
-
         # Get available prompty files
+        from .prompty_utils import list_prompty_files
         prompty_files = list_prompty_files()
 
         if not prompty_files:
-            raise click.ClickException(
-                "No prompty files found in the prompts directory"
-            )
+            raise click.ClickException("No prompty files found in the prompts directory")
 
-        # Display prompt options
-        click.echo("\nAvailable summary prompts:")
-        for i, prompty_file in enumerate(prompty_files, 1):
-            click.echo(f"{i}. {prompty_file['description']}")
-            if i == 1:
-                click.echo("   (Default)")
+        # Select prompt template
+        selected_prompty = _select_prompt_template(prompty_files)
 
-        # Get user selection with retry logic
-        max_attempts = 3
-        selected_index = None
-
-        for attempt in range(max_attempts):
-            try:
-                # Handle empty input (default to 1)
-                selection = click.prompt(
-                    "\nSelect a prompt number",
-                    type=str,
-                    default="1",
-                    show_default=False,
-                )
-
-                if not selection.strip():
-                    selected_index = 0
-                    break
-
-                selected_num = int(selection)
-                if 1 <= selected_num <= len(prompty_files):
-                    selected_index = selected_num - 1
-                    break
-                else:
-                    click.echo(
-                        f"Please enter a number between 1 and {len(prompty_files)}"
-                    )
-            except ValueError:
-                click.echo("Please enter a valid number")
-
-            if attempt < max_attempts - 1:
-                click.echo(f"Attempts remaining: {max_attempts - attempt - 1}")
-            else:
-                click.echo("\nUsing default prompt (1)")
-                selected_index = 0
-
-        # Get selected prompty file
-        selected_prompty = prompty_files[selected_index]
-
-        if output:
-            output_path = output
-        else:
-            # Auto-generate output path
-            base_name = Path(transcript_file).stem
-            output_path = ctx.obj["config"].get_output_path(
-                "summary", f"{base_name}_summary.md", use_date_subdir=True
-            )
-
-        # Create summarizer with selected prompty file
-        summarizer = TranscriptProcessor(str(selected_prompty["path"]))
+        # Determine output path
+        output_path = _get_summary_output_path(ctx, transcript_file, output)
 
         # Generate summary
+        summarizer = TranscriptProcessor(str(selected_prompty["path"]))
         summary = summarizer.generate_summary(transcript_file, output_path)
         click.echo(summary)
         return output_path
 
     except (TranscriptProcessorError, Exception) as e:
         raise click.ClickException(str(e))
+
+
+def _select_prompt_template(prompty_files):
+    """Helper to select a prompt template from available options."""
+    # Display prompt options
+    click.echo("\nAvailable summary prompts:")
+    for i, prompty_file in enumerate(prompty_files, 1):
+        click.echo(f"{i}. {prompty_file['description']}")
+        if i == 1:
+            click.echo("   (Default)")
+
+    # Get user selection with retry logic
+    max_attempts = 3
+    selected_index = 0  # Default to first prompt
+
+    for attempt in range(max_attempts):
+        try:
+            selection = click.prompt(
+                "\nSelect a prompt number",
+                type=str,
+                default="1",
+                show_default=False,
+            )
+
+            if not selection.strip():
+                break  # Use default
+
+            selected_num = int(selection)
+            if 1 <= selected_num <= len(prompty_files):
+                selected_index = selected_num - 1
+                break
+            else:
+                click.echo(f"Please enter a number between 1 and {len(prompty_files)}")
+        except ValueError:
+            click.echo("Please enter a valid number")
+
+        if attempt < max_attempts - 1:
+            click.echo(f"Attempts remaining: {max_attempts - attempt - 1}")
+        else:
+            click.echo("\nUsing default prompt (1)")
+
+    return prompty_files[selected_index]
+
+
+def _get_summary_output_path(ctx, transcript_file: str, output: Optional[str]):
+    """Helper to determine the output path for summary."""
+    if output:
+        return output
+
+    # Auto-generate output path
+    base_name = Path(transcript_file).stem
+    return ctx.obj["config"].get_output_path(
+        "summary", f"{base_name}_summary.md", use_date_subdir=True
+    )
 
 
 @cli.command()
@@ -298,7 +299,7 @@ def pipeline(ctx, output_dir: Optional[str], device: Optional[int], list_devices
 
         # Map speakers
         click.echo("\nStep 3: Mapping speakers...")
-        speaker_mapping = ctx.invoke(speaker_map, transcript_file=transcript_file)
+        ctx.invoke(speaker_map, transcript_file=transcript_file)
 
         # Summarize
         click.echo("\nStep 4: Generating summary...")

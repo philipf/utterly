@@ -19,7 +19,7 @@ class TranscriptProcessorError(Exception):
 
 class TranscriptProcessor:
     """Processes transcript data by transforming and analyzing it using configurable prompts and LLM models.
-    
+
     This class provides functionality to:
     - Load and apply custom prompts for transcript processing
     - Transform transcript data using LLM models
@@ -93,10 +93,10 @@ class TranscriptProcessor:
     def transcript_to_text(self, transcript_file: str) -> str:
         """
         Convert a transcript JSON file to simplified text format.
-        
+
         Args:
             transcript_file: Path to the transcript JSON file.
-            
+
         Returns:
             str: The simplified transcript text with recording timestamp.
         """
