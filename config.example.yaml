@@ -1,0 +1,13 @@
+recording:
+  output_dir: recordings
+  channels: 2
+  samplerate: null
+  subtype: null
+
+transcription:
+  output_dir: transcripts
+  model: nova-3-general
+  timeout: 300
+
+summary:
+  output_dir: summaries

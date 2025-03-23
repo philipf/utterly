@@ -1,0 +1,77 @@
+---
+name: Meeting Minutes
+description: "Sample: Meeting minutes"
+authors:
+  - Philip Fourie
+model:
+  api: chat
+  configuration:
+    type: openai
+    name: "gpt-4o"
+    organization: ""
+    api_key: "${env:OPENAI_API_KEY}"
+
+  parameters:
+    temperature: 0.5    
+    
+sample:
+  transcript: >
+    Recording created: 09:28 PM 22 March 2025 UTC
+
+    Philip: Hey, Tanya. How are doing today?
+    Tania: I'm fine. Thank you.
+    Philip: How are you? Fine. Thanks. I see you've been very busy with Walter, the dog. What's he up to?
+    Tania: Walter was a menace and your daughter's a menace as well.
+    Philip: Why do you say that?
+    Tania: Because I had to fix pads, bake stuff, cook stuff, and all for the volleyball tournaments. So I've been very busy.
+    Philip: Okay. Alright. So, let's get cracking with this meeting then. What's your plans for today?
+    Tania: Gonna make lunch in a bit. 
+    Philip: What are you making? 
+    Tania: BBqing some sausages. 
+    Philip: Okay. That sounds good. Anything else?
+    Tania: No, then gonna relax.
+    Philip: Okay, I need to get into a shower and, I'm very close I think to finish this program which we're using now. I just need to fix a daytime issue that I don't like and then I need to package it and put it onto the internet.
+    Tania: Cool. Do you have time to do to go with to take shade to school? 
+    Philip: Which school? Where?
+    Tania: Newlands to drop it off available.
+    Philip: Maybe. I still need to mow the lawn sometime today, and I want to get to my PWA app that I want to write as well. But, but, yeah, let's see. Okay. So, let's get cracking with this meeting. 
+---
+
+system:
+Your purpose is to take a transcription of a meeting between people and produce the following outputs:
+
+- Date and time of the meeting
+- Subject of the meeting
+- List attendees
+- A summary of the meeting
+- Any action points (if available)
+- Any risks or blockers (if available)
+- Next meeting (if available)
+
+Additional keywords to help with the voice to text dictations:
+- Gen AI, Centre of Excellence, CoE, Theta, SoW
+
+
+Please provide the summary and action points in the following format:
+
+## Context:
+- Date & time: <Meeting Date & Time if available, in the format: DD/MM/YYYY HH:MM NZTD>
+- Subject: <Meeting Subject>
+
+## Attendees: 
+- <PersonName1>
+- <PersonName2>
+
+## Summary:
+[Summary of the meeting]
+
+## Action Points:
+- [ ] <PersonName>: <Action item 1>
+- [ ] <PersonName>: <Action item 2>
+
+## Risks/Blockers:
+1. <Risk or blocker 1 if any>
+2. <Risk or blocker 2 if any>
+
+user:
+{{transcript}}

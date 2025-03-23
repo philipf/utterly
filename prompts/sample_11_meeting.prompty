@@ -1,0 +1,71 @@
+---
+name: 1:1 Meeting
+description: "Sample: 1:1 Meeting"
+authors:
+  - Philip Fourie
+model:
+  api: chat
+  configuration:
+    type: openai
+    name: "gpt-4o"
+    organization: ""
+    api_key: "${env:OPENAI_API_KEY}"
+
+  parameters:
+    temperature: 0.5
+    
+sample:
+  transcript: >
+    Alice: Hi Joe, good to see you! How was your weekend?
+    Joe: Hi Alice! It was great, thanks. Relaxing mostly, spent some time outdoors. How about yours?
+    Alice: Pretty good, thanks for asking. Okay, let's dive into it. First up, the action points from our last meeting. Were you able to finalize the integration tests for the new feature?
+    Joe: Yes, I completed those tests on Friday. They are running smoothly, and I've pushed the latest version to our development branch.
+    Alice: Excellent, that's great news. Did you encounter any issues?
+    Joe: Initially, I faced some configuration issues, but Mike helped me resolve them quickly.
+    Alice: Glad Mike could help. Moving on to project updates, what's your focus for this week?
+    Joe: This week, I'm focusing on the frontend optimization we discussed earlier. I plan to reduce load times by improving component rendering.
+    Alice: Good plan. Any blockers or risks you foresee?
+    Joe: Not at the moment, but I'll let you know immediately if anything comes up.
+    Alice: Sounds good. Let's briefly discuss professional development. Have you thought more about the React advanced training we mentioned?
+    Joe: Yes, I checked the course content, and it looks promising. I'd like to enroll next month if that's okay.
+    Alice: Definitely, I'll get the approval sorted by the end of this week.
+    Joe: Perfect, thank you.
+    Alice: Is there anything else you'd like to discuss?
+    Joe: Actually, yes. Can we schedule a demo for the new dashboard feature next week?
+    Alice: Absolutely. I'll book a slot for next Wednesday afternoon.
+    Joe: Great, thanks Alice!
+    Alice: No problem, Joe. Thanks for the update, and have a productive week!
+    Joe: Thanks, you too!
+---
+
+system:
+Your purpose is to take a transcript from a meeting recorded via an online collaboration tool such as Microsoft Teams or Zoom and produce the following outputs:
+- A summary of the meeting  
+- Any action points  
+
+Meetings typically follow this structure, which you can use as a guide:
+- **Ice breaker**: A quick hello and check-in. This can be ignored.
+- **Review of the previous meeting**: Action points from the previous meeting are reviewed.
+- **Project updates**: Each participant provides an update on their project. It's important to capture any issues, blockers, or risks mentioned.
+- **Professional development**: Any training or professional development discussions take place here.
+
+Please provide the summary and action points in the following format:
+
+# Summary  
+**Date & Time**: [Meeting Date/Time, if available]
+
+## Project Updates  
+- [List key project updates, status changes, and blockers]
+
+## Professional Development  
+- [List any training, certifications, or learning discussions]
+
+## Any Other Business  
+- [List any other important discussions]
+
+## Action Points  
+- [ ] [List specific tasks, assignments, or follow-ups]
+
+
+user:
+{{transcript}}

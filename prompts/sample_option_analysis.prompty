@@ -1,0 +1,58 @@
+---
+name: OptionAnalysis
+description: "Sample: Analyze options analysis"
+authors:
+  - Philip Fourie
+model:
+  api: chat
+  configuration:
+    type: openai
+    name: "gpt-4o"
+    organization: ""
+    api_key: "${env:OPENAI_API_KEY}"
+
+  parameters:
+    temperature: 0.5
+    
+sample:
+  transcript: >
+    Okay, today I'm considering several approaches for deploying our new web application. Let me walk through each and discuss their advantages and disadvantages.
+
+    First, Option A: deploying directly to our current on-premises servers.
+    Pros:
+    - We already have the infrastructure in place, saving upfront costs.
+    - Our IT team is familiar with managing these servers.
+    Cons:
+    - Limited scalability. If the app becomes popular quickly, scaling up might be a challenge.
+    - Maintenance overhead, as hardware failures could cause downtime.
+
+    Option B is moving everything to a cloud provider, such as AWS or Azure.
+    Pros:
+    - Highly scalable, can easily accommodate sudden increases in traffic.
+    - Managed services, reducing maintenance responsibilities.
+    Cons:
+    - Potentially higher operational costs, depending on usage.
+    - Requires training for our IT team to manage cloud environments effectively.
+
+    Finally, Option C involves using a hybrid model, with critical services on-premises and scalable components in the cloud.
+    Pros:
+    - Combines the best of both worlds, offering scalability and control.
+    - Potential cost savings by optimizing what runs locally versus in the cloud.
+    Cons:
+    - Complexity of managing two environments simultaneously.
+    - Might introduce additional security considerations.
+
+    Overall, each option has its merits. Option A is simplest but may not scale well, Option B offers great scalability but at a higher operational cost and learning curve, and Option C provides a flexible but potentially complex middle ground. I'll need to weigh these carefully against our immediate and future business needs.
+---
+
+system:
+Read the transcription carefully.
+For each option mentioned:
+Summarize the option in your own words (in a short paragraph).
+List the pros in bullet points.
+List the cons in bullet points.
+Provide a final summary of all options in a short paragraph at the end.
+Please use simple English and format your final answer in Markdown with a mix of bullet points and paragraphs.
+
+user:
+{{transcript}}
