@@ -99,51 +99,45 @@ def record(ctx, list_devices: bool, device: Optional[int], filename: Optional[st
 
 @cli.command()
 @click.argument("transcript_file", type=click.Path(exists=True))
+@click.option(
+    "--context-words", type=int, default=10, help="Number of words to show for context"
+)
 @click.pass_context
-def speaker_map(ctx, transcript_file: str):
+def speaker_map(ctx, transcript_file: str, context_words: int):
     """Interactively map speaker labels to names."""
-    import json
+    from .speaker_mapper import SpeakerMapper, SpeakerMapperError, NoSpeakersFoundError
+
+    def click_prompt_callback(speaker_label: str) -> str:
+        """Wrapper to use click.prompt for speaker name input."""
+        return click.prompt(f"Enter name for {speaker_label}")
 
     try:
-        # Read the transcript file
-        with open(transcript_file, "r") as f:
-            transcript = json.load(f)
+        # First identify speakers and show context
+        click.echo("\nIdentifying speakers and getting context...")
+        mapper = SpeakerMapper(name_prompt_callback=click_prompt_callback)
 
-        # Extract unique speaker labels
-        speakers = set()
-        for word in (
-            transcript.get("results", {})
-            .get("channels", [{}])[0]
-            .get("alternatives", [{}])[0]
-            .get("words", [])
-        ):
-            if "speaker" in word:
-                speakers.add(f"Speaker {word['speaker']}")
+        # Get context for all speakers
+        contexts = mapper.identify_speaker(transcript_file, context_words=context_words)
 
-        if not speakers:
-            raise click.ClickException("No speaker labels found in transcript")
+        # Display the results
+        click.echo("\nSpeaker Identification Results:")
+        click.echo("===============================")
 
-        # Create speaker mapping
+        for context in contexts:
+            click.echo(f"\nSpeaker: {context.speaker_label}")
+            click.echo(f"Words: {' '.join(context.words_spoken)}")
+
+            if (
+                context.start_timestamp is not None
+                and context.end_timestamp is not None
+            ):
+                click.echo(
+                    f"Time range: {context.start_timestamp:.2f}s - {context.end_timestamp:.2f}s"
+                )
+
+        # Now proceed with speaker mapping
         click.echo("\nDetected speakers:")
-        mapping = {}
-        for speaker in sorted(speakers):
-            name = click.prompt(f"Enter name for {speaker}")
-            mapping[speaker] = name
-
-        # Update transcript with speaker names
-        for word in (
-            transcript.get("results", {})
-            .get("channels", [{}])[0]
-            .get("alternatives", [{}])[0]
-            .get("words", [])
-        ):
-            if "speaker" in word:
-                speaker_label = f"Speaker {word['speaker']}"
-                word["speaker_name"] = mapping[speaker_label]
-
-        # Save updated transcript
-        with open(transcript_file, "w") as f:
-            json.dump(transcript, f, indent=4)
+        mapping = mapper.create_speaker_mapping(transcript_file)
 
         # Display final mapping
         click.echo("\nSpeaker mapping:")
@@ -152,8 +146,12 @@ def speaker_map(ctx, transcript_file: str):
 
         return mapping
 
-    except Exception as e:
+    except NoSpeakersFoundError:
+        raise click.ClickException("No speaker labels found in transcript")
+    except SpeakerMapperError as e:
         raise click.ClickException(str(e))
+    except Exception as e:
+        raise click.ClickException(f"Unexpected error during speaker mapping: {str(e)}")
 
 
 @cli.command()
@@ -197,10 +195,13 @@ def summarize(ctx, transcript_file: str, output: Optional[str]):
     try:
         # Get available prompty files
         from .prompty_utils import list_prompty_files
+
         prompty_files = list_prompty_files()
 
         if not prompty_files:
-            raise click.ClickException("No prompty files found in the prompts directory")
+            raise click.ClickException(
+                "No prompty files found in the prompts directory"
+            )
 
         # Select prompt template
         selected_prompty = _select_prompt_template(prompty_files)
