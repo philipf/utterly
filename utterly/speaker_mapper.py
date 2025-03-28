@@ -140,10 +140,15 @@ class SpeakerMapper:
         """
         try:
             for word in words:
-                if "speaker" in word and "speaker_name" not in word:
-                    speaker_label = f"Speaker {word['speaker']}"
-                    if speaker_label in mapping:
-                        word["speaker_name"] = mapping[speaker_label]
+                if "speaker" in word:
+                    # When speaker_name is not present, add it
+                    if "speaker_name" not in word:
+                        speaker_label = f"Speaker {word['speaker']}"
+                        if speaker_label in mapping:
+                            word["speaker_name"] = mapping[speaker_label]
+                    # When speaker_name is already present, update it if it's in our mapping
+                    elif word["speaker_name"] in mapping:
+                        word["speaker_name"] = mapping[word["speaker_name"]]
         except (KeyError, TypeError) as e:
             raise SpeakerMapperError(f"Error updating transcript: {e}")
 

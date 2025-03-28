@@ -70,6 +70,39 @@ def test_update_transcript(sample_transcript):
     assert words[2]["speaker_name"] == "Alice"
 
 
+def test_update_transcript_with_existing_names():
+    """Test that existing speaker_name values get updated correctly."""
+    transcript = {
+        "results": {
+            "channels": [
+                {
+                    "alternatives": [
+                        {
+                            "words": [
+                                {"text": "Hello", "speaker": 1, "speaker_name": "Speaker 1"},
+                                {"text": "Hi", "speaker": 2, "speaker_name": "Speaker 2"},
+                                {"text": "there", "speaker": 1, "speaker_name": "Speaker 1"},
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    
+    mapper = SpeakerMapper()
+    mapping = {
+        "Speaker 1": "Alice", 
+        "Speaker 2": "Bob",
+    }
+    updated = mapper._update_transcript(transcript, mapping)
+
+    words = updated["results"]["channels"][0]["alternatives"][0]["words"]
+    assert words[0]["speaker_name"] == "Alice"
+    assert words[1]["speaker_name"] == "Bob"
+    assert words[2]["speaker_name"] == "Alice"
+
+
 def test_update_transcript_invalid_format():
     mapper = SpeakerMapper()
     with pytest.raises(SpeakerMapperError):
@@ -102,6 +135,51 @@ def test_create_speaker_mapping_invalid_file():
     mapper = SpeakerMapper()
     with pytest.raises(SpeakerMapperError):
         mapper.create_speaker_mapping("nonexistent_file.json")
+
+
+def test_create_speaker_mapping_update_existing(mock_name_prompt, tmp_path):
+    """Test updating an existing transcript with speaker_name attributes."""
+    # Create a transcript with existing speaker_name attributes
+    existing_transcript = {
+        "results": {
+            "channels": [
+                {
+                    "alternatives": [
+                        {
+                            "words": [
+                                {"text": "Hello", "speaker": 1, "speaker_name": "Speaker 1"},
+                                {"text": "Hi", "speaker": 2, "speaker_name": "Speaker 2"},
+                                {"text": "there", "speaker": 1, "speaker_name": "Speaker 1"},
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    
+    # Create a temporary transcript file
+    transcript_file = tmp_path / "test_existing_transcript.json"
+    with open(transcript_file, "w") as f:
+        json.dump(existing_transcript, f)
+    
+    # Create a mapper that will return updated names
+    mapper = SpeakerMapper(name_prompt_callback=mock_name_prompt)
+    mapping = mapper.create_speaker_mapping(transcript_file)
+    
+    # Verify mapping was created correctly
+    assert mapping == {
+        "Speaker 1": "Test Name for Speaker 1",
+        "Speaker 2": "Test Name for Speaker 2",
+    }
+    
+    # Verify the file was updated with new speaker names
+    with open(transcript_file, "r") as f:
+        updated_transcript = json.load(f)
+        words = updated_transcript["results"]["channels"][0]["alternatives"][0]["words"]
+        assert words[0]["speaker_name"] == "Test Name for Speaker 1"
+        assert words[1]["speaker_name"] == "Test Name for Speaker 2"
+        assert words[2]["speaker_name"] == "Test Name for Speaker 1"
 
 
 def test_default_name_prompt(monkeypatch):
