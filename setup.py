@@ -16,7 +16,7 @@ setup(
         'soundfile==0.13.1',
         'sounddevice==0.5.1',
         'langchain==0.3.21',
-        'langchain-openai==0.3.9',
+        'langchain-openai==0.3.11',
         'langchain-prompty==0.1.1',
         'httpx==0.28.1',
         'verboselogs==1.7',
