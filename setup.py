@@ -12,7 +12,7 @@ setup(
         'python-dotenv==1.0.1',
         'deepgram-sdk==3.10.1',
         'numpy==2.2.4',
-        'pytz==2025.1',
+        'pytz==2025.2',
         'soundfile==0.13.1',
         'sounddevice==0.5.1',
         'langchain==0.3.21',
