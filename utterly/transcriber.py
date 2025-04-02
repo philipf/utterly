@@ -37,6 +37,7 @@ class Transcriber:
         self.api_key = settings["api_key"]
         self.model = settings["model"]
         self.timeout = settings["timeout"]
+        self.keyterms = settings.get("keyterms", [])
 
         if not self.api_key:
             raise TranscriptionError("Deepgram API key not found")
@@ -76,6 +77,7 @@ class Transcriber:
                 utterances=True,
                 punctuate=True,
                 diarize=True,
+                keyterm=self.keyterms,
                 **kwargs,
             )
 

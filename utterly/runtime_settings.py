@@ -80,6 +80,7 @@ class RuntimeSettings:
             "subtype": recording_config.get("subtype"),
         }
 
+
     def get_transcription_settings(self):
         """
         Get runtime settings for transcription.
@@ -97,6 +98,7 @@ class RuntimeSettings:
             "api_key": os.getenv("DEEPGRAM_API_KEY"),
             "model": transcription_config.get("model"),
             "timeout": transcription_config.get("timeout", 300),
+            "keyterms": transcription_config.get("keyterms", []),
         }
 
         if not settings["api_key"]:

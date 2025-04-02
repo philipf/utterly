@@ -8,6 +8,9 @@ transcription:
   output_dir: transcripts
   model: nova-3-general
   timeout: 300
+  keyterms: 
+    - "keyterm1"
+    - "keyterm2"
 
 summary:
   output_dir: summaries
