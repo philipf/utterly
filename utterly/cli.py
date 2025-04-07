@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 from pathlib import Path
+import subprocess
 import click
 from dotenv import load_dotenv
 from .config import Config, ConfigError
@@ -8,6 +9,7 @@ from .runtime_settings import RuntimeSettings, RuntimeSettingsError
 from .recorder import AudioRecorder
 from .transcriber import Transcriber, TranscriptionError
 from .transcript_processor import TranscriptProcessor, TranscriptProcessorError
+from .file_opener import FileOpener
 
 
 # Create a Click group for our commands
@@ -310,6 +312,7 @@ def pipeline(ctx, output_dir: Optional[str], device: Optional[int], list_devices
         click.echo(f"Audio: {audio_file}")
         click.echo(f"Transcript: {transcript_file}")
         click.echo(f"Summary: {summary_file}")
+        FileOpener.open_file(summary_file)
 
     except click.ClickException as e:
         click.echo(f"Pipeline failed: {str(e)}", err=True)
