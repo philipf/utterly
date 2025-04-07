@@ -31,7 +31,7 @@ langchain-prompty==0.1.1
 langchain-text-splitters==0.3.7
 langsmith==0.3.19
 marshmallow==3.26.1
-multidict==6.2.0
+multidict==6.3.2
 mypy-extensions==1.0.0
 numpy==2.2.4
 openai==1.68.2
