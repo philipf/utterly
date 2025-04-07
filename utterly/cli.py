@@ -100,7 +100,7 @@ def record(ctx, list_devices: bool, device: Optional[int], filename: Optional[st
 @cli.command()
 @click.argument("transcript_file", type=click.Path(exists=True))
 @click.option(
-    "--context-words", type=int, default=10, help="Number of words to show for context"
+    "--context-words", type=int, default=20, help="Number of words to show for context"
 )
 @click.pass_context
 def speaker_map(ctx, transcript_file: str, context_words: int):
