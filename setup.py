@@ -10,7 +10,7 @@ setup(
         'pyaudio~=0.2.14',
         'pydub~=0.25.1',
         'python-dotenv~=1.1.0',
-        'deepgram-sdk~=3.10.1',
+        'deepgram-sdk>=3.10.1,<3.12.0',
         'numpy~=2.2.4',
         'pytz~=2025.2',
         'soundfile~=0.13.1',
