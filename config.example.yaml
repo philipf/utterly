@@ -1,5 +1,6 @@
 recording:
   output_dir: recordings
+  device_id: 14
   channels: 2
   samplerate: null
   subtype: null

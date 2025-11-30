@@ -75,6 +75,7 @@ class RuntimeSettings:
 
         # Extract only runtime parameters
         return {
+            "device_id": recording_config.get("device_id"),
             "channels": recording_config.get("channels", 2),
             "samplerate": recording_config.get("samplerate"),
             "subtype": recording_config.get("subtype"),

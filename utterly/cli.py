@@ -66,10 +66,13 @@ def record(ctx, list_devices: bool, device: Optional[int], filename: Optional[st
 
         click.echo("Starting recording... Press Ctrl+C to stop")
 
+        # Determine device ID, giving precedence to CLI option
+        device_id = device if device is not None else settings.get("device_id")
+
         # Record with explicit parameters
         output_file = recorder.record(
             filename=output_path,
-            device=device,
+            device=device_id,
             channels=settings["channels"],
             samplerate=settings["samplerate"],
             subtype=settings["subtype"],

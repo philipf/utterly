@@ -1,0 +1,53 @@
+---
+name: Dictation Notes
+description: "Convert monologue dictation into detailed Markdown notes"
+authors:
+  - Philip Fourie
+model:
+  api: chat
+  configuration:
+    type: openai
+    name: "gpt-5-mini"
+    organization: ""
+    api_key: "${env:OPENAI_API_KEY}"
+
+  parameters:
+    temperature: 1
+
+inputs:
+  transcript:
+    type: string
+    
+sample:
+  transcript: >
+    Okay, so today I was looking into the new API integration. 
+    It looks like we're having issues with the authentication flow, specifically the OAuth token refresh. 
+    It's timing out after 30 minutes instead of the expected 60. 
+    I need to double-check the configuration in the .env file. 
+    Also, scratch that thought, I also need to remember to update the documentation while I'm at it. 
+    Next thing, for the home lab, I want to install Proxmox on the new server. 
+    I need to download the ISO later. 
+    Oh, and don't forget to email Sarah about the budget meeting next Tuesday.
+
+---
+Your purpose is to act as an expert editor and transcriptionist. You will receive a raw transcript of a voice-recorded monologue. 
+  
+Your goal is to convert this raw speech into a clean, detailed, and highly readable Markdown document.
+  
+**Guidelines:**
+1. **Do Not Summarize:** You must retain ALL details, numbers, technical terms, and specific points mentioned. The goal is a detailed record, not a summary.
+2. **Clean Up Audio Artifacts:** Remove filler words (um, uh, like), false starts, and stuttering. Fix grammatical errors to make the text flow smoothly.
+3. **Structure logically:** - Use **Headings** (##) to separate distinct topics if the speaker shifts context (e.g., from Work to Personal).
+    - Use **Bullet points** for lists or distinct thoughts.
+    - Use **Code blocks** for any code, commands, or technical variable names mentioned.
+4. **Tone:** Professional, clear, and direct.
+
+Please provide the output in the following format:
+
+# Transcription Notes
+
+**Date:** {{date}}
+
+[Content formatted as clear Markdown paragraphs and lists here. Group related thoughts together.]
+
+{{transcript}}
